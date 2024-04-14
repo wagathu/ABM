@@ -31,7 +31,7 @@ Person <- R6Class(
     
     initialize = \(pars, ...) {
       self$pars = pars
-      self$S = TRUE              # Initialize S and I as public fields
+      self$S = TRUE              
       self$I = FALSE
       self$t_I = NULL
       self$imm = 0
