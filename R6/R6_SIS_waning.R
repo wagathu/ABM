@@ -128,8 +128,7 @@ Sim <- R6Class(
       self$I_full = list()
       return(self)
     },
-    
-    
+  
     get_xy = \() {
       # Get the location of each agent
       x <- map_dbl(self$people, ~ .x$x)
@@ -255,9 +254,6 @@ Sim <- R6Class(
   )
 )
 
-
-
-# Example usage
 sim <- Sim$new()
 sim$run()
 sim$plot()
