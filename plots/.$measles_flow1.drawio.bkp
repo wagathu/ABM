@@ -1,0 +1,164 @@
+<mxfile host="Electron" modified="2024-04-16T11:51:42.858Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.1.0 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="xy8zwVLOhaKIT-ZoNpvH" version="24.1.0" type="device">
+  <diagram name="Page-1" id="SKlVWpM3gQdmIaxl79uS">
+    <mxGraphModel dx="5186" dy="1911" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-36" target="jPbXmBRkO7Ze5MyIgj_Q-37" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-83" value="Yes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="jPbXmBRkO7Ze5MyIgj_Q-46" vertex="1" connectable="0">
+          <mxGeometry x="-0.0133" y="-4" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-36" target="jPbXmBRkO7Ze5MyIgj_Q-48" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-51" value="No" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="jPbXmBRkO7Ze5MyIgj_Q-50" vertex="1" connectable="0">
+          <mxGeometry x="-0.1508" y="-1" relative="1" as="geometry">
+            <mxPoint x="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-36" value="MCV1 (at first year of life)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-2270" y="150" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-37" target="jPbXmBRkO7Ze5MyIgj_Q-48" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-52" value="No" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="jPbXmBRkO7Ze5MyIgj_Q-49" vertex="1" connectable="0">
+          <mxGeometry x="-0.5176" y="-1" relative="1" as="geometry">
+            <mxPoint x="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-85" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-37" target="jPbXmBRkO7Ze5MyIgj_Q-80" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-86" value="&lt;b&gt;Yes&lt;/b&gt;&lt;br&gt;&lt;br&gt;Two doses of MCV&amp;nbsp;&lt;div&gt;(MCV1 and MCV2)&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="jPbXmBRkO7Ze5MyIgj_Q-85" vertex="1" connectable="0">
+          <mxGeometry x="-0.2238" y="6" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-37" value="MCV2 (at second year of life)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-2270" y="335" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-38" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-35" target="jPbXmBRkO7Ze5MyIgj_Q-36" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-2180" y="380" as="sourcePoint" />
+            <mxPoint x="-2130" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-39" value="&lt;span style=&quot;font-size: 12px; text-wrap: wrap; background-color: rgb(251, 251, 251);&quot;&gt;Probability of being&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 12px; text-wrap: wrap; background-color: rgb(251, 251, 251);&quot;&gt;vaccinated with MCV1&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 12px; text-wrap: wrap; background-color: rgb(251, 251, 251);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="jPbXmBRkO7Ze5MyIgj_Q-38" vertex="1" connectable="0">
+          <mxGeometry x="0.0007" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-35" value="Maternal antibodies wear off" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-2290" y="-60" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-48" target="jPbXmBRkO7Ze5MyIgj_Q-53" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EDpbJGPuWmJwVazFRywI-2" value="Vaccination&lt;div&gt;Coverage of&amp;nbsp;&lt;/div&gt;&lt;div&gt;Sub-region&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="jPbXmBRkO7Ze5MyIgj_Q-54" vertex="1" connectable="0">
+          <mxGeometry x="-0.3818" y="-1" relative="1" as="geometry">
+            <mxPoint x="31" y="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-48" value="Pool of Susceptibles" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="-2020" y="150" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-53" target="jPbXmBRkO7Ze5MyIgj_Q-55" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-57" value="Yes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="jPbXmBRkO7Ze5MyIgj_Q-56" vertex="1" connectable="0">
+          <mxGeometry x="0.0974" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-53" value="Receive Supplementary Immunisation Activity ?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-1710" y="105" width="160" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-55" target="jPbXmBRkO7Ze5MyIgj_Q-48" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-59" value="Yes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="jPbXmBRkO7Ze5MyIgj_Q-58" vertex="1" connectable="0">
+          <mxGeometry x="0.2644" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-81" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-55" target="jPbXmBRkO7Ze5MyIgj_Q-80" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-82" value="No" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="jPbXmBRkO7Ze5MyIgj_Q-81" vertex="1" connectable="0">
+          <mxGeometry x="-0.0728" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-55" value="1st dose ?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-1710" y="-200" width="160" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-90" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-80" target="jPbXmBRkO7Ze5MyIgj_Q-87" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eV8zcf91iv8zn-NcjDsn-3" value="&lt;span style=&quot;font-size: 12px; text-wrap: wrap; background-color: rgb(251, 251, 251);&quot;&gt;Probability of&lt;/span&gt;&lt;div style=&quot;font-size: 12px; text-wrap: wrap; background-color: rgb(251, 251, 251);&quot;&gt;&amp;nbsp;infection&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="jPbXmBRkO7Ze5MyIgj_Q-90">
+          <mxGeometry x="-0.1048" y="-3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="EDpbJGPuWmJwVazFRywI-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-80" target="jPbXmBRkO7Ze5MyIgj_Q-53" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-80" value="Pool of Immune" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="-1490" y="460" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-94" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-87" target="jPbXmBRkO7Ze5MyIgj_Q-88" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eV8zcf91iv8zn-NcjDsn-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-87" target="eV8zcf91iv8zn-NcjDsn-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-87" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;rounded=1;container=0;" parent="1" vertex="1">
+          <mxGeometry x="-1160" y="460" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="jPbXmBRkO7Ze5MyIgj_Q-88" value="Probability of Elimination by 2030 (zero cases for &amp;gt; 12 months)" style="rounded=1;whiteSpace=wrap;html=1;container=0;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="-890" y="460" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nvWF9NjFMmmYGzCkbsGD-1" value="- Mal-nutrition&lt;div&gt;- Age&lt;/div&gt;&lt;div&gt;- Distance to HFA&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f8cecc;strokeColor=#b85450;align=left;" parent="1" vertex="1">
+          <mxGeometry x="-1140" y="335" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="EDpbJGPuWmJwVazFRywI-3" value="Probability of being&amp;nbsp;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;vaccinated with MCV2&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;" parent="1" vertex="1">
+          <mxGeometry x="-2310" y="230" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="eV8zcf91iv8zn-NcjDsn-1" value="" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="-1160" y="600" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="eV8zcf91iv8zn-NcjDsn-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.655;entryY=0.995;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="jPbXmBRkO7Ze5MyIgj_Q-53" target="jPbXmBRkO7Ze5MyIgj_Q-48">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1530" y="180" />
+              <mxPoint x="-1530" y="290" />
+              <mxPoint x="-1941" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eV8zcf91iv8zn-NcjDsn-5" value="No" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="eV8zcf91iv8zn-NcjDsn-4">
+          <mxGeometry x="0.0826" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eV8zcf91iv8zn-NcjDsn-6" value="&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;Prob &amp;lt; 1, since some who receive mcv1 get immunity&lt;/span&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;" vertex="1" parent="1">
+          <mxGeometry x="-2130" y="200" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="eV8zcf91iv8zn-NcjDsn-7" value="&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;Prob &amp;lt; 1, since some who receive mcv1 get immunity&lt;/span&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;" vertex="1" parent="1">
+          <mxGeometry x="-1840" y="-210" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="eV8zcf91iv8zn-NcjDsn-8" value="&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;Prob &amp;lt; 1, since some who receive mcv1 get immunity&lt;/span&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;" vertex="1" parent="1">
+          <mxGeometry x="-1820" y="300" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="eV8zcf91iv8zn-NcjDsn-12" value="&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;Prob &amp;lt; 1, since some who receive mcv2 dont get immunity&lt;/span&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;" vertex="1" parent="1">
+          <mxGeometry x="-1900" y="500" width="80" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
