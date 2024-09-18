@@ -12,8 +12,7 @@ import starsim as ss
 import matplotlib.pyplot as plt
 
 # Creating the class measles
-class Measles2(ss.SIR):
-
+class Measles(ss.SIR):
     def __init__(self, pars=None, par_dists=None, *args, **kwargs):
         """ Initialize with parameters """
 
@@ -117,35 +116,67 @@ class measles_vaccine(ss.sir_vaccine):
         people.measles.rel_sus[uids] *= 1-self.pars.efficacy
         return
 
-class routine_measles_vx(ss.routine_vx):
+class routine_measles_vx(ss.Intervention):
     """
     Routine vaccination - an instance of base vaccination combined with routine delivery.
     See base classes for a description of input arguments.
     """
 
-    def __init__(self, product=None, prob=None, eligibility=None, mean = None,
-                 start_year=None, end_year=None, years=None, uid = None, age_lim1=9/12, age_lim2=12/12, **kwargs):
-        super().__init__(product=product, prob=prob, eligibility=eligibility, 
-                         start_year=start_year, end_year=end_year, years=years, **kwargs)
-        self.age_lim1 = age_lim1
-        self.age_lim2 = age_lim2
-        self.uid = uid,
-        self.age = self.people.age
+    def __init__(
+      self, 
+      product=None, 
+      prob=None, 
+      eligibility=None, 
+      mean = None,
+      start_year=None, 
+      end_year=None, 
+      years=None,
+      **kwargs):
+        
+        super().__init__(**kwargs)
+        self.product = product
+        self.eligibility = eligibility
+        self.start_year = start_year
+        self.end_year = end_year
+        self.timepoints = np.arange(start_year, end_year)
+        self.mean = mean
+        self.vaccinated = ss.State('vaccinated', bool, False)
+        self.n_doses = ss.State('doses', int, 0)
+        self.ti_vaccinated = ss.State('ti_vaccinated', int, ss.INT_NAN)
         return
 
-    def check_eligibility(self, sim):
-        eligible = (sim.people.age >= self.age_lim1) & (sim.people.age <= self.age_lim2)
-        #eligible_uid = sim.people.uid[eligible]
-        return eligible
-    
-    def probs_vac(self, mean):
-        ages = self.people.age
+
+    def probs_vac(self, sim):
+        ages = sim.people.age
+        mean = self.mean
         prob = np.random.normal(loc=ages/mean, scale=0.2)
         prob = np.abs(prob)
         if prob > 1:
             prob = 1/prob
         return prob
         
+
+    def apply(self, sim):
+        """
+        Deliver the vaccine by finding who's eligible, finding who accepts, and applying the product.
+        """
+        accept_uids = np.array([])
+        if sim.ti in self.timepoints:
+          
+            eligible_uids = sim.people.uid
+            n_eligible = len(eligible_uids)
+            prob = self.probs_vac(sim)
+            accept_uids = prob > 0.8
+
+            if len(accept_uids):
+                self.product.administer(sim.people, accept_uids)
+
+                # Update people's state and dates
+                self.vaccinated[accept_uids] = True
+                self.ti_vaccinated[accept_uids] = sim.ti
+                self.n_doses[accept_uids] += 1
+
+        return accept_uids
 
 
 #measles = measles(beta = .6)
@@ -160,10 +191,6 @@ pars = sc.objdict(
         type = 'randomnet',
         n_contacts = 10
         ),
-    diseases = dict(
-        type = 'measles',
-        
-        )
     )
 
 # The vaccines
@@ -176,26 +203,22 @@ my_vax3 = measles_vaccine(name='vax3', pars=dict(efficacy=0.9))
 # The interventions from the vaccine
 intv1 =  routine_measles_vx(name='routine1', 
                             start_year=2009,
-                            #prob = probs_vac(self, mean = 12),
-                            product=my_vax1,
-                            age_lim1=9/12,
-                            age_lim2=12/12
+                            mean=12,
+                            product=my_vax1
                             )
-                            
 intv2 =  routine_measles_vx(name='routine2',
                             start_year=2006, 
                             #prob = probs_vac(self, mean = 21),
                             product=my_vax2,
-                            age_lim1=18/12,
-                            age_lim2=24/12
+                            mean = 21
                             )
                             
-sia = ss.campaign_vx(name='SIA', years= [2006], prob=0.9, product=my_vax3) # The campaigns representing the SIAs
+sia = ss.campaign_vx(name='SIA', years= [2006], prob=0.9, product = my_vax3) # The campaigns representing the SIAs
 intv = [intv1, intv2, sia]
 
 # The simulations
-sim_base = ss.Sim(pars=pars, start = 2005, end = 2030)
-sim_intv = ss.Sim(pars = pars, interventions = intv, start = 2005, end = 2030)
+sim_base = ss.Sim(pars=pars, diseases = Measles(beta = .6), start = 2005, end = 2030)
+sim_intv = ss.Sim(pars = pars, diseases. = Measles(beta = .6), interventions = intv, start = 2005, end = 2030)
 sim_base.run()
 sim_intv.run()
 
@@ -212,4 +235,4 @@ plt.show();
 
 
 sim_base.plot()
-
+#plt.show()

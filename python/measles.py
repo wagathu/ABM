@@ -36,7 +36,7 @@ class Measles(SIR):
 
         super().__init__(pars=pars, par_dists=par_dists, *args, **kwargs)
 
-        # SIR are added automatically, here we add E
+        # SIR are added automatically, here we add E s
         self.add_states(
             ss.State('exposed', bool, False),
             ss.State('ti_exposed', float, np.nan),
