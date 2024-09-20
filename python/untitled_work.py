@@ -1,15 +1,22 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Sep 20 09:27:19 2024
+
+@author: SAYIANKA
+"""
+
 """
 Define measles model.
 Adapted from https://github.com/optimamodel/gavi-outbreaks/blob/main/stisim/gavi/measles.py
 Original version by @alina-muellenmeister, @domdelport, and @RomeshA
 """
 
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import starsim as ss
 from starsim.diseases.sir import SIR
-
 __all__ = ['Measles']
 
 """
@@ -31,11 +38,13 @@ class Measles(SIR):
             # Initial conditions and beta
             beta=1.0,  # Placeholder value
             init_prev=ss.bernoulli(p=0.005),
+            imm_prob=0.3,
 
             # Natural history parameters, all specified in days
             dur_exp=ss.normal(loc=8),        # (days) - source: US CDC
             dur_inf=ss.normal(loc=11),       # (days) - source: US CDC
-            p_death=ss.bernoulli(p=0.005),  # Probability of death
+            # Probability of death: OBTAINED FROM KENYAN DATA CASE FATALTY RATE 2003-2016
+            p_death=ss.bernoulli(p=0.018),
         )
         self.update_pars(pars=pars, **kwargs)
 
@@ -50,6 +59,16 @@ class Measles(SIR):
     @property
     def infectious(self):
         return self.infected | self.exposed
+
+    def set_initial_states(self, sim):
+        super().set_initial_states(sim)
+        imm_prob = self.pars.imm_prob
+        alive_uids = ss.true(sim.people.alive & self.susceptible)
+        initially_immune = imm_prob > 0
+
+     # initially_immune = self.pars.init_imm.filter(alive_uids)
+        self.susceptible[initially_immune] = False
+        self.recovered[initially_immune] = True
 
     def update_pre(self):
         # Progress exposed -> infected
@@ -108,13 +127,13 @@ class Measles(SIR):
 
 pars = sc.objdict(
     n_agents=5000,
-    birth_rate=20,
-    death_rate=20,
+    birth_rate=0,
+    death_rate=0,
     networks=ss.RandomNet()
 )
 
 measles = Measles()
-sim = ss.Sim(pars=pars, diseases=measles)
+sim = ss.Sim(pars=pars)
 sim.run()
 
 res = pd.DataFrame({
@@ -133,3 +152,11 @@ plot = (
 
 
 )
+
+measles.default_pars()
+
+
+measles = Measles()
+
+# Inspect the `infectious` property
+infectious_agents = measles.infectious

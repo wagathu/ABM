@@ -10,6 +10,7 @@ import sciris as sc
 import starsim as ss
 import matplotlib.pyplot as plt
 
+
 class MyMeasles(ss.Measles):
     pass
 
@@ -18,16 +19,17 @@ class measles_vaccine(ss.sir_vaccine):
     """
     Create a vaccine product that changes susceptible people to recovered (i.e., perfect immunity)
     """
+
     def administer(self, people, uids):
         people.mymeasles.rel_sus[uids] *= 1-self.pars.efficacy
         return
 
 
 pars = sc.objdict(
-    n_agents = 1000,
-    birth_rate = 20,
-    death_rate = 15,
-    networks = 'random',
+    n_agents=1000,
+    birth_rate=20,
+    death_rate=15,
+    networks='random',
 )
 
 
