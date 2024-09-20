@@ -10,6 +10,7 @@ from plotnine import *
 
 # Creating the measles class
 class Measles(ss.SIR):
+    
     def __init__(self, pars=None, par_dists=None, *args, **kwargs):
         """ Initialize with parameters """
 
@@ -44,8 +45,6 @@ class Measles(ss.SIR):
             ss.State('exposed', bool, False),
             ss.State('ti_exposed', float, np.nan),
         )
-    
-
         return
     
     # initial immunity

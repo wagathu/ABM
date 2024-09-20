@@ -6,7 +6,6 @@ Created on Tue Apr 16 16:25:15 2024
 @author: macuser
 """
 
-import sciris as sc
 import starsim as ss
 import matplotlib.pyplot as plt
 

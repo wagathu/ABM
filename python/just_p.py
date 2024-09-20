@@ -1,50 +1,61 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Sep 18 14:11:54 2024
+
+@author: macuser
+"""
+
 """
 Define measles model.
 Adapted from https://github.com/optimamodel/gavi-outbreaks/blob/main/stisim/gavi/measles.py
 Original version by @alina-muellenmeister, @domdelport, and @RomeshA
 """
 
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
 import starsim as ss
+import numpy as np
 from starsim.diseases.sir import SIR
-import sciris as sc
-
-__all__ = ['Measles']
-
-"""
-Define measles model.
-Adapted from https://github.com/optimamodel/gavi-outbreaks/blob/main/stisim/gavi/measles.py
-Original version by @alina-muellenmeister, @domdelport, and @RomeshA
-"""
-
 
 __all__ = ['Measles']
 
 
-class Measles(SIR):
+class Measles(ss.SIR):
 
-    def __init__(self, pars=None, *args, **kwargs):
+    def __init__(self, pars=None, par_dists=None, *args, **kwargs):
         """ Initialize with parameters """
-        super().__init__()
-        self.default_pars(
-            # Initial conditions and beta
-            beta=1.0,  # Placeholder value
-            init_prev=ss.bernoulli(p=0.005),
 
+        pars = ss.omergeleft(pars,
             # Natural history parameters, all specified in days
-            dur_exp=ss.normal(loc=8),        # (days) - source: US CDC
-            dur_inf=ss.normal(loc=11),       # (days) - source: US CDC
-            p_death=ss.bernoulli(p=0.005),  # Probability of death
+            dur_exp = 10,       # (days) - source: US CDCv3
+            dur_inf = 8,      # 4 days before rash and 4 days after rash
+            p_death = 0.002,   # Probability of death
+
+            # Initial conditions and beta
+            init_prev = None, # 0.000495,
+            imm_prob = None,  # Could replace this with a function that depends on age
+            beta = None,
         )
-        self.update_pars(pars=pars, **kwargs)
+        # initial immunity turkana: .578
+        # initial immunity kisumu: .75
+        # initial immunity makueni: .8
+        
+
+        par_dists = ss.omergeleft(par_dists,
+            dur_exp   = ss.normal,
+            dur_inf   = ss.normal,
+            init_prev = ss.bernoulli,
+            #imm_prob  = ss.bernoulli,
+            p_death   = ss.bernoulli,
+        )
+
+        super().__init__(pars=pars, par_dists=par_dists, *args, **kwargs)
 
         # SIR are added automatically, here we add E
         self.add_states(
-            ss.BoolArr('exposed', label='Exposed'),
-            ss.FloatArr('ti_exposed', label='Time of exposure'),
+            ss.State('exposed', bool, False),
+            ss.State('ti_exposed', float, np.nan),
         )
+    
 
         return
 
@@ -93,10 +104,8 @@ class Measles(SIR):
         will_die = p.p_death.rvs(uids)
         dead_uids = uids[will_die]
         rec_uids = uids[~will_die]
-        self.ti_dead[dead_uids] = self.ti_infected[dead_uids] + \
-            dur_inf[will_die] / dt
-        self.ti_recovered[rec_uids] = self.ti_infected[rec_uids] + \
-            dur_inf[~will_die] / dt
+        self.ti_dead[dead_uids] = self.ti_infected[dead_uids] + dur_inf[will_die] / dt
+        self.ti_recovered[rec_uids] = self.ti_infected[rec_uids] + dur_inf[~will_die] / dt
 
         return
 
@@ -106,32 +115,3 @@ class Measles(SIR):
             self.statesdict[state][uids] = False
         return
 
-
-pars = sc.objdict(
-    n_agents=5000,
-    birth_rate=20,
-    death_rate=20,
-    networks=ss.RandomNet()
-)
-
-measles = Measles()
-sim = ss.Sim(pars=pars, diseases=measles)
-sim.run()
-
-sim.results.n_
-res = pd.DataFrame({
-    'year': sim.yearvec,
-    'susceptible': sim.results.measles.n_susceptible,
-    "Exposed": sim.results.measles.n_exposed,
-    "Infected": sim.results.measles.n_infected,
-    "Recovered": sim.results.measles.n_recovered
-})
-res_long = pd.melt(res, id_vars=['year'], var_name='state', value_name='count')
-
-plot = (
-    ggplot(res_long, aes(x='year', y='count')) +
-    geom_line(aes(color='state')) +
-    theme_light()
-
-
-)
