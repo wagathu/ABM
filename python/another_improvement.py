@@ -1,16 +1,18 @@
-
-
+# Modules
 import numpy as np
 import sciris as sc
 import matplotlib.pyplot as pl
 import starsim as ss
 from plotnine import *
 import pandas as pd
+import matplotlib.pyplot as plt
 
-# how to check the kind of numbers generated
-# ss.lognorm_ex(mean=10, stdev=2, strict = False).rvs(10)
+# Data
+kenya_popsize = pd.read_csv("data/ky.csv")
+pop_age = pd.read_csv("data/pop_age.csv")
+pop_age['value'] = pop_age['value'].astype(float)
 
-
+# Measles class
 class SEIR(ss.Infection):
     """
     Example SEIR model
@@ -149,56 +151,34 @@ class SEIR(ss.Infection):
         sc.boxoff()
         sc.commaticks()
         return fig
-    
-
+measles = SEIR()
+# Pars
 pars = dict(
     n_agents = 20_000,     # Number of agents to simulate
-    # birth_rate = 27.58, #27.58,         # parameters for monthly: birth rate 2022 is 27.58
-    # death_rate = 8,       # parameters for monthly: death rate 2022 is 7.8
-
-    networks = ss.RandomNet(pars={'n_contacts': 10})
-    # networks = ss.RandomNet(pars={'n_contacts': ss.poisson(10)})
+    birth_rate = 27.58,    # parameters for monthly: birth rate 2022 is 27.58
+    death_rate = 8,        # parameters for monthly: death rate 2022 is 7.8
+    networks = ss.RandomNet(pars={'n_contacts': 40})
 )
 
-measles = SEIR()
-ppl = ss.People(20_000, age_data=r.pop_age)
+ppl = ss.People(
+    20_000, 
+    age_data = pop_age
+    )
 
-mysim = ss.Sim(pars = pars, total_pop=47563609, start=2020, people=ppl, 
-diseases=measles, rand_seed = 765, n_years=5, dt=1/365, 
+mysim = ss.Sim(
+    pars = pars, 
+    total_pop = 47563609, 
+    start = 2020, 
+    people = ppl, 
+    diseases = measles, 
+    rand_seed = 765,
+    n_years = 5, 
+    dt=1/365
 )
 
 mysim.run()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#measles.pars.beta.set(loc = lambda self, sim, ti: beta * (1 + beta_amplitude * np.cos(2 * np.pi * (ti - beta_phase) / beta_period)))
-mysim = ss.Sim(pars = pars, diseases=measles, rand_seed = 765,
-               start=2020, n_years=5, dt=1/365, 
-demographics = demographics
-               )
-mysim.run()
-
-
 mysim.plot()
 plt.show()
-
-# running the results
-# GO AND CHECK THIS AT YOUR WORKING DIRECTORY
-d1 = mysim.export_df()
-d1.to_csv("trial.csv")
 
 
 res = pd.DataFrame({
@@ -210,8 +190,6 @@ res = pd.DataFrame({
 })
 res_long = pd.melt(res, id_vars=['year'], var_name='state', value_name='count')
 
-
-
 (
  ggplot(res_long.iloc[10:, ], aes(x='year', y='count')) +
  geom_line(aes(color='state')) +
@@ -219,59 +197,10 @@ res_long = pd.melt(res, id_vars=['year'], var_name='state', value_name='count')
  theme_light()
 )
 
-
-# Assuming res_long is your DataFrame
-# Create a new column that converts the decimal 'year' to datetime
-res_long['date'] = pd.to_datetime((res_long['year'] - 2020) * 365, unit='D', origin=pd.Timestamp('2020-01-01'))
-
-# Extract year and month from the date
-res_long['year_month'] = res_long['date'].dt.to_period('M')
-
-# Group by year_month and sum the 'count' column
-monthly_agg = res_long.groupby(['year_month'])['count'].sum().reset_index()
-monthly_agg['year_month'] = monthly_agg['year_month'].dt.to_timestamp()
-
-# Plotting with ggplot
-(
-    ggplot(monthly_agg, aes(x='year_month', y='count')) +
-    geom_line() +
-    geom_point() +
-    theme_light()
-)
-
-
-
-(
- ggplot(monthly_agg, aes(x='year_month', y='count')) +
- geom_line() +
- geom_point() +
- theme_light()
-)
-
-
-# USING CALLABLE PARAMS
-# sir = ss.SIR(dur_inf=ss.normal(loc=10))  # Define an SIR model with a default duration of 10 days
-# sir.pars.dur_inf.set(loc = lambda self, sim, uids: sim.people.age[uids] / 10)  # Change the mean duration so it scales with age
-# sim = ss.Sim(n_agents=1e3, diseases=sir, networks='random')
-# sim.run()
-
+# Age population
 x = mysim.people.age
-import matplotlib.pyplot as plt
-
-x = pd.DataFrame({"age":x})
-
-# Assuming 'x' is a NumPy array or list of ages
-plt.hist(x, bins=30, edgecolor='black')
-
-# Adding labels and title
-plt.xlabel('Age')
-plt.ylabel('Frequency')
-plt.title('Histogram of Age')
-
-# Display the histogram
-plt.show()
-
+x_df = pd.DataFrame({"age":x})
 (
- ggplot(x, aes(x = "age")) +
+ ggplot(x_df, aes(x = "age")) +
  geom_histogram(color = "white")
 )

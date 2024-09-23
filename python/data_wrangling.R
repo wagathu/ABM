@@ -42,12 +42,14 @@ k2 <- k |>
 
 # Population dataset ------------------------------------------------------
 
+# Age and population
 pop_age <- rKenyaCensus::V3_T2.2 %>%
   setNames(c(str_to_lower(colnames(.)))) |>
   data.table() |> 
   _[!age %in% c("Total", "NotStated") & !str_detect(age, "\\-"),] |> 
   _[, .(age = str_replace_all(age, "\\+", "") |> as.numeric(), value = total)]
 fwrite(pop_age, "data/pop_age.csv", row.names = F)
+
 
 # Population projections using INLA ---------------------------------------
 
@@ -107,7 +109,17 @@ mbdf5 |>
 
 ky <- mbdf5 %>%
   filter(month(date) == 12 & gender == "Total") |> 
-  summarise(n_alive = sum(projections), .by = c(year))
+  summarise(n_alive = sum(projections), .by = c(year)) |> 
+  mutate(year = as.numeric(year)) |> 
+  arrange(year)
+fwrite(ky, "data/ky.csv")
+
+cy <- mbdf5 %>%
+  filter(month(date) == 12 & gender == "Total") |> 
+  summarise(n_alive = sum(projections), .by = c(year, county)) |> 
+  mutate(year = as.numeric(year)) |> 
+  arrange(year)
+fwrite(cy, "data/cy.csv")
 
 # Plotting ----------------------------------------------------------------
 
