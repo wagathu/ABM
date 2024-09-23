@@ -90,4 +90,3 @@ class Measles(SIR):
         for state in ['susceptible', 'exposed', 'infected', 'recovered']:
             self.statesdict[state][uids] = False
         return
-

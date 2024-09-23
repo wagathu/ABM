@@ -117,8 +117,8 @@ pars = sc.objdict(
 measles = Measles()
 sim = ss.Sim(pars=pars, diseases=measles)
 sim.run()
+sim.plot()
 
-sim.results.n_
 res = pd.DataFrame({
     'year': sim.yearvec,
     'susceptible': sim.results.measles.n_susceptible,

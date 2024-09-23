@@ -1,0 +1,24 @@
+---
+title: "Measles Parameters"
+author: "B.M Njuguna"
+format: pdf
+editor: visual
+engine: knitr
+bibliography: references.bib
+---
+
+## Transmission Rate \beta
+
+According to [WHO](https://www.who.int/news-room/fact-sheets/detail/measles#:~:text=For%20this%20reason%2C%20it%20is,days%20after%20the%20rash%20erupts.) one person can infect 9 out of 10 of their unvaccinated contacts
+
+## Average contacts
+
+| Age         | Average contact          |
+|-------------|--------------------------|
+| 0-5         | `r 69+71+3+27+16/5`      |
+| 6-14        | `r 123 + 102+10+30+10/5` |
+| 15-19       | `r (1+2+4+3+5)/5`        |
+| 20-49       | `r (41+26+13+9+17)/5`    |
+| >= 50 | `r (5+2+4+4+5)/5`        |
+
+: Average number of contacts per age group[@kiti2016]
