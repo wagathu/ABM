@@ -24,13 +24,11 @@ class SEIR(ss.Infection):
     def __init__(self, pars=None, **kwargs):
         super().__init__()
         self.default_pars(
-            beta = .8, # 1 - np.exp(-(15/7)),  # Mean transmission rate: R0 / D
-            
+            beta = .9, # 1 - np.exp(-(15/7)),  # Mean transmission rate: R0 / D
             init_prev = ss.bernoulli(p=.05),
-            dur_exp = ss.lognorm_ex(mean=10/30, stdev=2),
-            dur_inf = ss.lognorm_ex(mean=10/30, stdev=2),
-            p_death = ss.bernoulli(p=0.018),
-            p_immunity = ss.bernoulli(p = .0)
+            dur_exp = ss.lognorm_ex(mean=10/12, stdev=2),
+            dur_inf = ss.lognorm_ex(mean=9/12, stdev=2),
+            p_death = ss.bernoulli(p=0.018)
 
         )
         self.update_pars(pars, **kwargs)
@@ -47,7 +45,7 @@ class SEIR(ss.Infection):
     
     @property
     def infectious(self):
-        return self.infected | self.exposed
+        return self.infected
 
 
     def update_pre(self):
@@ -56,37 +54,21 @@ class SEIR(ss.Infection):
         p = self.pars
         ti = sim.ti
         dt = sim.dt
-        
+    
         # handle beta here: at start of infection prior to transmission
-        beta_mean = .3  # Mean transmission rate
+        beta_mean = 1  # Mean transmission rate
         beta_amplitude = 1  # Amplitude of seasonal forcing
-        #beta_phase = 100  # Phase shift of seasonal forcing (in months)
-        #beta_period = 20  # Period of seasonal forcing (in months)
-        beta_rate = beta_mean * (1 + beta_amplitude * np.cos(2 * np.pi * ti/365) * np.sin(2 * np.pi * ti/365))
+        beta_rate = beta_mean * (1 + beta_amplitude * np.cos(2 * np.pi * ti/12))
         beta_prob = 1 - np.exp(-beta_rate)
         
         # Dynamically get the network keys from the simulation
         network_keys = self.sim.networks.keys()
         self.pars.beta = {key: [beta_prob, beta_prob] for key in network_keys}
-        
-        # add a condition here to make children less than/eq to 6 months of age immune
-        p_immunity = np.where((sim.people.age < .5) | (sim.people.age > 50), 1, 0)
 
-        
         # conditions for all older people above 20 years to never get measles
-        all_ids_above_20 = sim.people.uid[sim.people.age > 20]
+        all_ids_above_20 = sim.people.uid[sim.people.age > 100]
         self.susceptible[all_ids_above_20] = False
         self.recovered[all_ids_above_20] = True
-        
-        # Handle initially immune individuals
-        if ti == 0:  
-            all_susceptibles = self.susceptible.uids
-            initially_immune = p.p_immunity.rvs(len(all_susceptibles))
-            immune_uids = all_susceptibles[initially_immune]
-            self.susceptible[immune_uids] = False
-            self.recovered[immune_uids] = True
-            self.ti_recovered[immune_uids] = ti
-            
 
         # Progress exposed -> infectious
         new_infectious = (self.exposed & (self.ti_infectious <= ti) ).uids
@@ -138,6 +120,16 @@ class SEIR(ss.Infection):
         self.infected[uids] = False
         self.recovered[uids] = False
         return
+      
+    def update_results(self):
+        super().update_results()
+        res = self.results
+        ti = self.sim.ti
+        res.prevalence[ti] = (res.n_infected[ti] + res.n_exposed[ti] )/ np.count_nonzero(self.sim.people.alive)
+        res.new_infections[ti] = np.count_nonzero(self.ti_exposed == ti)
+        res.cum_infections[ti] = np.sum(res['new_infections'][:ti+1])
+        return
+
 
     def plot(self, plot_kw=None):
         """ Default plot for SEIR model """
@@ -151,47 +143,97 @@ class SEIR(ss.Infection):
         sc.boxoff()
         sc.commaticks()
         return fig
+    
 measles = SEIR()
+
+class measles_vaccine(ss.Vx):
+    """
+    Create a vaccine product that affects the probability of infection.
+    
+    The vaccine can be either "leaky", in which everyone who receives the vaccine 
+    receives the same amount of protection (specified by the efficacy parameter) 
+    each time they are exposed to an infection. The alternative (leaky=False) is
+    that the efficacy is the probability that the vaccine "takes", in which case
+    that person is 100% protected (and the remaining people are 0% protected).
+    
+    Args:
+        efficacy (float): efficacy of the vaccine (0<=efficacy<=1)
+        leaky (bool): see above
+    """
+    def __init__(self, pars=None, *args, **kwargs):
+        super().__init__()
+        self.default_pars(
+            efficacy = 0.9,
+            leaky = True
+        )
+        self.update_pars(pars, **kwargs)
+        return
+
+    def administer(self, people, uids):        
+        if self.pars.leaky:
+            people.seir.rel_sus[uids] *= 1-self.pars.efficacy
+        else:
+            people.seir.rel_sus[uids] *= np.random.binomial(1, 1-self.pars.efficacy, len(uids))
+        return
+    
+# Create the product - a vaccine with 50% efficacy
+mcv1 = measles_vaccine(efficacy=0.95)
+mcv2 = measles_vaccine(efficacy=0.95)
+
+# Create the intervention
+my_intervention1 = ss.routine_vx(
+    start_year=2020,    # Begin vaccination in 2015
+    prob=0.95,           # 20% coverage
+    product=mcv1        # Use the MyVaccine product
+)
+
+my_intervention2 = ss.routine_vx(
+    start_year=2020,    # Begin vaccination in 2015
+    prob=0.80,           # 20% coverage
+    product=mcv2,   # Use the MyVaccine product
+    eligibility = self.
+)
+
+
+
 # Pars
 pars = dict(
-    n_agents = 20_000,     # Number of agents to simulate
+    n_agents = 25_000,     # Number of agents to simulate
     birth_rate = 27.58,    # parameters for monthly: birth rate 2022 is 27.58
-    death_rate = 8,        # parameters for monthly: death rate 2022 is 7.8
-    networks = ss.RandomNet(pars={'n_contacts': 40})
+    death_rate = 7.8,        # parameters for monthly: death rate 2022 is 7.8
+    networks = ss.RandomNet(pars={'n_contacts': 14})
 )
 
 ppl = ss.People(
-    20_000, 
+    n_agents = 25_000,     # Number of agents to simulate
     age_data = pop_age
     )
 
 mysim = ss.Sim(
     pars = pars, 
-    total_pop = 47563609, 
     start = 2020, 
     people = ppl, 
     diseases = measles, 
     rand_seed = 765,
-    n_years = 5, 
-    dt=1/365
+    n_years = 10,
+    dt = 1/12
 )
 
 mysim.run()
 mysim.plot()
 plt.show()
 
-
 res = pd.DataFrame({
     'year': mysim.yearvec,
-    #'susceptible': mysim.results.seir.n_susceptible,
-    #"Exposed": mysim.results.seir.n_exposed,
+    'susceptible': mysim.results.seir.n_susceptible,
+    "Exposed": mysim.results.seir.n_exposed,
     "Infected": mysim.results.seir.n_infected,
-    #"Recovered": mysim.results.seir.n_recovered
+    "Recovered": mysim.results.seir.n_recovered
 })
 res_long = pd.melt(res, id_vars=['year'], var_name='state', value_name='count')
 
 (
- ggplot(res_long.iloc[10:, ], aes(x='year', y='count')) +
+ ggplot(res_long, aes(x='year', y='count')) +
  geom_line(aes(color='state')) +
  geom_point(aes(color='state')) +
  theme_light()
