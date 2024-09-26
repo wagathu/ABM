@@ -1,4 +1,5 @@
 import starsim as ss
+import sciris as sc
 
 class measlesIntervention(ss.Plugin):
     """
@@ -53,8 +54,6 @@ class measlesIntervention(ss.Plugin):
             dose = "mcv2"
         return dose
     
-
-      
 class measlesBaseVaccination(measlesIntervention):
     """
     Base vaccination class for determining who will receive a vaccine.
@@ -80,15 +79,22 @@ class measlesBaseVaccination(measlesIntervention):
 
             ti = sc.findinds(self.timepoints, sim.ti)[0]
             prob = self.prob[ti]  # Get the proportion of people who will be tested this timestep
-            is_eligible = self.check_eligibility(sim)  # Check eligibility
-            self.coverage_dist.set(p=prob)
-            accept_uids = self.coverage_dist.filter(is_eligible)
+            #is_eligible = self.check_eligibility(sim)  # Check eligibility
+            #self.coverage_dist.set(p=prob)
+            #accept_uids = self.coverage_dist.filter(is_eligible)
             
             check_dose = self.check_dose(sim)
             if check_dose == "mcv1":
-                accept_uids = sim.people.auids[(sim.people.age >= 9/12) & (sim.people.age <= 12/12) & (sim.interventions.routine1.n_doses == 0)]
+                eligible_accept_uids = sim.people.auids[(sim.people.age >= 9/12) & (sim.people.age <= 12/12) & (sim.interventions.routine1.n_doses == 0)]
             else:
-                accept_uids = sim.people.auids[(sim.people.age >= 18/12) & (sim.people.age <= 24/12) & (sim.interventions.routine1.n_doses == 1) & (sim.interventions.routine2.n_doses == 0)]
+                eligible_accept_uids = sim.people.auids[
+                    (sim.people.age >= 18/12) & 
+                    (sim.people.age <= 24/12) & 
+                    (sim.interventions.routine1.n_doses == 1) &
+                    (sim.interventions.routine2.n_doses == 0) 
+                ]
+                
+            accept_uids = eligible_accept_uids[ss.bernoulli(p=prob, strict = False).rvs(eligible_accept_uids.shape)]
 
             if len(accept_uids):
                 self.product.administer(sim.people, accept_uids)
@@ -102,7 +108,6 @@ class measlesBaseVaccination(measlesIntervention):
 
         return accept_uids
 
-      
 class measles_routine_vx(measlesBaseVaccination, ss.RoutineDelivery):
     """
     Routine vaccination - an instance of base vaccination combined with routine delivery.
@@ -119,3 +124,34 @@ class measles_routine_vx(measlesBaseVaccination, ss.RoutineDelivery):
     def init_pre(self, sim):
         ss.RoutineDelivery.init_pre(self, sim)  # Initialize this first, as it ensures that prob is interpolated properly
         measlesBaseVaccination.init_pre(self, sim)  # Initialize this next
+
+class measles_vaccine(ss.Vx):
+    """
+    Create a vaccine product that affects the probability of infection.
+    
+    The vaccine can be either "leaky", in which everyone who receives the vaccine 
+    receives the same amount of protection (specified by the efficacy parameter) 
+    each time they are exposed to an infection. The alternative (leaky=False) is
+    that the efficacy is the probability that the vaccine "takes", in which case
+    that person is 100% protected (and the remaining people are 0% protected).
+    
+    Args:
+        efficacy (float): efficacy of the vaccine (0<=efficacy<=1)
+        leaky (bool): see above
+    """
+    def __init__(self, pars=None, *args, **kwargs):
+        super().__init__()
+        self.default_pars(
+            efficacy = 0.9,
+            leaky = True
+        )
+        self.update_pars(pars, **kwargs)
+        return
+
+    def administer(self, people, uids):        
+        if self.pars.leaky:
+            people.seir.rel_sus[uids] *= 1-self.pars.efficacy
+        else:
+            people.seir.rel_sus[uids] *= np.random.binomial(1, 1-self.pars.efficacy, len(uids))
+        return
+   

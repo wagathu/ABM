@@ -7,6 +7,7 @@ from plotnine import *
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 # Data
 kenya_popsize = pd.read_csv("data/ky.csv")
 pop_age = pd.read_csv("data/pop_age.csv")
@@ -26,7 +27,7 @@ class SEIR(ss.Infection):
         super().__init__()
         self.default_pars(
             beta = 1-np.exp(-18/9) ,  # Mean transmission rate: R0 / D
-            init_prev = ss.bernoulli(p=.005),
+            init_prev = ss.bernoulli(p=109/1e6),
             dur_exp = ss.lognorm_ex(mean=10/12, stdev=2),
             dur_inf = ss.lognorm_ex(mean=9/12, stdev=2),
             p_death = ss.bernoulli(p=0.018)
@@ -48,7 +49,6 @@ class SEIR(ss.Infection):
     def infectious(self):
         return self.infected
 
-
     def update_pre(self):
         """ Update states before the next time step """
         sim = self.sim
@@ -56,20 +56,20 @@ class SEIR(ss.Infection):
         ti = sim.ti
         dt = sim.dt
     
-        # handle beta here: at start of infection prior to transmission
-        beta_mean = 1-np.exp(-18/9)  # Mean transmission rate
-        beta_amplitude = 0.21   #Amplitude of seasonal forcing
-        beta_rate = beta_mean * (1 + beta_amplitude * np.cos(2 * np.pi * ti/12))
-        beta_prob = 1 - np.exp(-beta_rate)
-    
-        # Dynamically get the network keys from the simulation
-        network_keys = self.sim.networks.keys()
-        self.pars.beta = {key: [beta_prob, beta_prob] for key in network_keys}
+        # # handle beta here: at start of infection prior to transmission
+        # beta_mean = 1-np.exp(-18/9)  # Mean transmission rate
+        # beta_amplitude = 0.21   #Amplitude of seasonal forcing
+        # beta_rate = beta_mean * (1 + beta_amplitude * np.cos(4 * np.pi * ti/12))
+        # beta_prob = 1 - np.exp(-beta_rate)
+        # 
+        # # Dynamically get the network keys from the simulation
+        # network_keys = self.sim.networks.keys()
+        # self.pars.beta = {key: [beta_prob, beta_prob] for key in network_keys}
 
         # conditions for all older people above 20 years to never get measles
-        all_ids_above_20 = sim.people.uid[sim.people.age > 100]
-        self.susceptible[all_ids_above_20] = False
-        self.recovered[all_ids_above_20] = True
+        # all_ids_above_20 = sim.people.uid[sim.people.age > 20]
+        # self.susceptible[all_ids_above_20] = False
+        # self.recovered[all_ids_above_20] = True
 
         # Progress exposed -> infectious
         new_infectious = (self.exposed & (self.ti_infectious <= ti) ).uids
@@ -177,14 +177,14 @@ intv = [intv1, intv2]
 # Parameters -------------------------------------------------------------------------------------------
 
 pars = dict(
-    n_agents = 25_000,     # Number of agents to simulate
+    n_agents = 50_000,     # Number of agents to simulate
     birth_rate = 27.58,    # parameters for monthly: birth rate 2022 is 27.58
     death_rate = 7.8,        # parameters for monthly: death rate 2022 is 7.8
-    networks = ss.RandomNet(pars={'n_contacts': 10})
+    networks = ss.RandomNet(pars={'n_contacts': 4})
 )
 
 ppl = ss.People(
-    n_agents = 25_000,     # Number of agents to simulate
+    n_agents = 50_000,     # Number of agents to simulate
     age_data = pop_age
    
     )
@@ -192,19 +192,30 @@ ppl = ss.People(
 # Simulations -------------------------------------------------------------------------------------------
 
 mysim = ss.Sim(
-    pars = pars, 
+    pars = pars,
+    start = 2020, 
+    people = ppl, 
+    diseases = measles, 
+    rand_seed = 765,
+    n_years = 30,
+    dt = 1/12
+)
+
+mysim_Intv = ss.Sim(
+    pars = pars,
     start = 2020, 
     people = ppl, 
     diseases = measles, 
     interventions = intv,
     rand_seed = 765,
-    n_years = 10,
+    n_years = 30,
     dt = 1/12
 )
 
 # Running the model -------------------------------------------------------------------------------------------
 
 mysim.run()
+mysim_Intv.run()
 mysim.plot()
 plt.show()
 
@@ -216,20 +227,28 @@ res = pd.DataFrame({
     "Exposed": mysim.results.seir.n_exposed,
     "Infected": mysim.results.seir.n_infected,
     "new_infections": mysim.results.seir.new_infections,
-    "Recovered": mysim.results.seir.n_recovered
+    "Recovered": mysim.results.seir.n_recovered,
+    "No Intv Prevalence":mysim.results.seir.prevalence,
+    "Intv Prevalence":mysim_Intv.results.seir.prevalence
 })
 res_long = pd.melt(res, id_vars=['year'], var_name='state', value_name='count')
+
+# Filter for specific states
+filtered_res = res_long.loc[res_long['state'].isin(['Intv Prevalence', 'No Intv Prevalence'])]
 
 # New infections
 res2 = pd.DataFrame({
     'year': mysim.yearvec,
     "new_infections": mysim.results.seir.new_infections,
+    "new_infections_intv": mysim_Intv.results.seir.new_infections,
 })
+
+res2_long = pd.melt(res2, id_vars=['year'], var_name='state', value_name='count')
 
 # Age at vaccination
 age_vaccinated = pd.DataFrame({
-    "age_mcv1": mysim.interventions.routine1.age_at_vaccination*12,
-    "age_mcv2" : mysim.interventions.routine2.age_at_vaccination*12
+    "age_mcv1": mysim_Intv.interventions.routine1.age_at_vaccination*12,
+    "age_mcv2" : mysim_Intv.interventions.routine2.age_at_vaccination*12
     
     })
 
@@ -244,7 +263,22 @@ age_vaccinated = pd.DataFrame({
 
 
 (
-  ggplot(res2, aes(x="year", y = "new_infections")) +
+  ggplot(res2_long, aes(x="year", y = "count", color = "state")) +
    geom_line(size = 1) +
  theme_light()
 )
+
+(
+  ggplot(filtered_res, aes(x="year", y = "count", color = "state")) +
+  geom_line(size = 1) +
+  theme_light() +
+  labs(title = "Prevalence")
+)
+
+
+(
+  ggplot(age_vaccinated, aes(x = "age_mcv2")) +
+  geom_histogram()
+)
+
+mysim_Intv.interventions.routine2.n_doses.max()

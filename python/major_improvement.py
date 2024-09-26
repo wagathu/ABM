@@ -12,7 +12,8 @@ kenya_popsize = pd.read_csv("data/ky.csv")
 pop_age = pd.read_csv("data/pop_age.csv")
 pop_age['value'] = pop_age['value'].astype(float)
 
-# Measles class
+# Measles class -------------------------------------------------------------------------------------------
+
 class SEIR(ss.Infection):
     """
     Example SEIR model
@@ -147,57 +148,34 @@ class SEIR(ss.Infection):
         sc.boxoff()
         sc.commaticks()
         return fig
-    
 measles = SEIR()
 
-class measles_vaccine(ss.Vx):
-    """
-    Create a vaccine product that affects the probability of infection.
-    
-    The vaccine can be either "leaky", in which everyone who receives the vaccine 
-    receives the same amount of protection (specified by the efficacy parameter) 
-    each time they are exposed to an infection. The alternative (leaky=False) is
-    that the efficacy is the probability that the vaccine "takes", in which case
-    that person is 100% protected (and the remaining people are 0% protected).
-    
-    Args:
-        efficacy (float): efficacy of the vaccine (0<=efficacy<=1)
-        leaky (bool): see above
-    """
-    def __init__(self, pars=None, *args, **kwargs):
-        super().__init__()
-        self.default_pars(
-            efficacy = 0.9,
-            leaky = True
-        )
-        self.update_pars(pars, **kwargs)
-        return
+# Interventions -------------------------------------------------------------------------------------------
 
-    def administer(self, people, uids):        
-        if self.pars.leaky:
-            people.seir.rel_sus[uids] *= 1-self.pars.efficacy
-        else:
-            people.seir.rel_sus[uids] *= np.random.binomial(1, 1-self.pars.efficacy, len(uids))
-        return
-    
-# Create the product - a vaccine with 50% efficacy
-mcv1 = measles_vaccine(efficacy=0.95, leaky = True)
-mcv2 = measles_vaccine(efficacy=0.95)
+my_vax1 = measles_vaccine(name='vax1', pars=dict(efficacy=0.85))
+my_vax2 = measles_vaccine(name='vax2', pars=dict(efficacy=0.99))
 
-# Create the intervention
-my_intervention1 = ss.routine_vx(
-    start_year=2020,    # Begin vaccination in 2015
-    prob=0.95,           # 20% coverage
-    product=mcv1        # Use the MyVaccine product
+intv1 = measles_routine_vx(
+    name='routine1', 
+    start_year=2020,
+    product=my_vax1,
+    prob=.95,
+    dose = "mcv1"
+    
 )
 
-my_intervention2 = ss.routine_vx(
-    start_year=2020,    # Begin vaccination in 2015
-    prob=0.80,           # 20% coverage
-    product=mcv2   # Use the MyVaccine product
+intv2 = measles_routine_vx(
+    name='routine2',
+    start_year=2020,
+    product=my_vax2,
+    prob=.95,
+    dose = "mcv2"
 )
 
-# Pars
+intv = [intv1, intv2]
+
+# Parameters -------------------------------------------------------------------------------------------
+
 pars = dict(
     n_agents = 25_000,     # Number of agents to simulate
     birth_rate = 27.58,    # parameters for monthly: birth rate 2022 is 27.58
@@ -205,25 +183,32 @@ pars = dict(
     networks = ss.RandomNet(pars={'n_contacts': 10})
 )
 
-# ppl = ss.People(
-#     n_agents = 25_000,     # Number of agents to simulate
-#     age_data = pop_age
-#     )
+ppl = ss.People(
+    n_agents = 25_000,     # Number of agents to simulate
+    age_data = pop_age
+   
+    )
+
+# Simulations -------------------------------------------------------------------------------------------
 
 mysim = ss.Sim(
     pars = pars, 
     start = 2020, 
     people = ppl, 
     diseases = measles, 
-    #interventions = my_intervention1,
+    interventions = intv,
     rand_seed = 765,
     n_years = 10,
     dt = 1/12
 )
 
+# Running the model -------------------------------------------------------------------------------------------
+
 mysim.run()
 mysim.plot()
 plt.show()
+
+# Consolidating the results -------------------------------------------------------------------------------------------
 
 res = pd.DataFrame({
     'year': mysim.yearvec,
@@ -235,24 +220,28 @@ res = pd.DataFrame({
 })
 res_long = pd.melt(res, id_vars=['year'], var_name='state', value_name='count')
 
+# New infections
+res2 = pd.DataFrame({
+    'year': mysim.yearvec,
+    "new_infections": mysim.results.seir.new_infections,
+})
+
+# Age at vaccination
+age_vaccinated = pd.DataFrame({
+    "age_mcv1": mysim.interventions.routine1.age_at_vaccination*12,
+    "age_mcv2" : mysim.interventions.routine2.age_at_vaccination*12
+    
+    })
+
+
+# Plotting -------------------------------------------------------------------------------------------
+
 (
  ggplot(res_long, aes(x='year', y='count')) +
  geom_line(aes(color='state'), size = 1) +
  theme_light()
 )
 
-# Age population
-x = mysim.people.age
-x_df = pd.DataFrame({"age":x})
-(
- ggplot(x_df, aes(x = "age")) +
- geom_histogram(color = "white")
-)
-
-res2 = pd.DataFrame({
-    'year': mysim.yearvec,
-    "new_infections": mysim.results.seir.new_infections,
-})
 
 (
   ggplot(res2, aes(x="year", y = "new_infections")) +

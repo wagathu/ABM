@@ -12,7 +12,8 @@ pacman::p_load(
   rKenyaCensus,
   INLA,
   inlabru,
-  tidyr
+  tidyr,
+  readxl
 )
 
 
@@ -21,10 +22,43 @@ pacman::p_load(
 k <- fread("data/kenya_measles.csv")
 co <- fread("data/county_measles.csv")
 bdf2 <- readRDS("data/year_pop.rds")
+who_cases <- read_excel("data/who_cases.xlsx")
+who_month_cases <- read_excel("data/who_monthly_cases.xlsx")
+who_vaccs <- read_excel("data/who_vaccs.xlsx")
+who_inci <- read_excel("data/who_inci.xlsx")
+week_measles <- fread("data/weekly_measles.csv")
 
 # Data wrangling ----------------------------------------------------------
 
-head(k)
+# Cleaning WHO cases
+wc <- data.frame(t(who_cases))[-c(1:2),1] %>%
+  data.frame("cases" = ., year = rev(1980:2023)) |> 
+  mutate(cases = as.numeric(str_remove_all(cases, "\\,")))
+  
+wi <- data.frame(t(who_inci))[-c(1:3),1] %>%
+  data.frame("inci" = ., year = rev(1980:2023)) |> 
+  mutate(inci = as.numeric(str_remove_all(inci, "\\,")))
+
+wmc <- who_month_cases %>% 
+  setNames(str_to_lower(colnames(.))) |> 
+  dplyr::select(-region, -iso3, -country) |> 
+  data.table() |> 
+  melt(id.vars = "year") |> 
+  mutate(date = ymd(paste(year, str_to_title(variable), "01", sep = "-"))) |> 
+  dplyr::select(date, cases = value) |> 
+  mutate(cases = as.numeric(cases))
+
+wk_measles <- week_measles |>
+  _[, date := periodname] |>
+  _[, `:=`(
+    county = orgunitlevel2,
+    subcounty = orgunitlevel3,
+    cases = `IDSR Measles Total`
+  )] |> 
+  _[county == "", ] |>
+  _[, end_of_week := as.Date(sub(".*-\\s*(\\d{4}-\\d{2}-\\d{2})", "\\1", date))] |> 
+  _[, .(date = end_of_week, cases)]
+fwrite(wk_measles, "data/wk_measles.csv", row.names = F)
 
 k2 <- k |> 
   _[, .(
@@ -38,7 +72,7 @@ k2 <- k |>
   _[, date := ymd(paste(year, month, "01", sep = "-"))] |> 
   _[, !c("month", "year")] |> 
   setcolorder(c("date", "cases", "deaths", "mcv1", "mcv2"))
-
+fwrite(k2, "data/clean_kenya_measles.csv", row.names = F)
 
 # Population dataset ------------------------------------------------------
 
@@ -123,6 +157,33 @@ fwrite(cy, "data/cy.csv")
 
 # Plotting ----------------------------------------------------------------
 
+
+wc |> 
+  filter(year >= 2000) |> 
+  ggplot(aes(x = year)) +
+  geom_xspline(aes(y = cases)) +
+  scale_y_continuous(labels = scales::label_comma()) +
+  theme_light()
+wi |> 
+  filter(year >= 2000) |> 
+  ggplot(aes(x = year)) +
+  geom_xspline(aes(y = inci)) +
+  scale_y_continuous(labels = scales::label_comma()) +
+  theme_light()
+
+wmc |> 
+  filter(date >= as.Date("2020-01-01")) |> 
+  ggplot(aes(x = date)) +
+  geom_line(aes(y = cases)) +
+  scale_y_continuous(labels = scales::label_comma()) +
+  theme_light()
+
+wk_measles |> 
+  ggplot(aes(x = date)) +
+  geom_xspline(aes(y = cases))+
+  theme_light()
+
+wi
 k2 |> 
   ggplot(aes(x = date)) +
   geom_xspline(aes(y = cases)) +
