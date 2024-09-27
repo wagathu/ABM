@@ -26,8 +26,9 @@ class SEIR(ss.Infection):
     def __init__(self, pars=None, **kwargs):
         super().__init__()
         self.default_pars(
-            beta = 1-np.exp(-18/9) ,  # Mean transmission rate: R0 / D
-            init_prev = ss.bernoulli(p=109/1e6),
+            beta = 18/9 ,  # Mean transmission rate: R0 / D
+            init_prev = ss.bernoulli(p=0.005),
+            init_immune = ss.bernoulli(p=0.01)
             dur_exp = ss.lognorm_ex(mean=10/12, stdev=2),
             dur_inf = ss.lognorm_ex(mean=9/12, stdev=2),
             p_death = ss.bernoulli(p=0.018)
@@ -48,6 +49,16 @@ class SEIR(ss.Infection):
     @property
     def infectious(self):
         return self.infected
+      
+     def set_initial_states(self, sim):
+        super().set_initial_states(sim)
+        imm_prob = self.pars.imm_prob
+        alive_uids = ss.true(sim.people.alive & self.susceptible)
+        initially_immune = imm_prob > np.random.rand()
+
+        self.susceptible[initially_immune] = False
+        self.recovered[initially_immune] = True
+        
 
     def update_pre(self):
         """ Update states before the next time step """
@@ -56,20 +67,20 @@ class SEIR(ss.Infection):
         ti = sim.ti
         dt = sim.dt
     
-        # # handle beta here: at start of infection prior to transmission
-        # beta_mean = 1-np.exp(-18/9)  # Mean transmission rate
+        # # # handle beta here: at start of infection prior to transmission
+        # beta_mean = 0.15  # Mean transmission rate
         # beta_amplitude = 0.21   #Amplitude of seasonal forcing
         # beta_rate = beta_mean * (1 + beta_amplitude * np.cos(4 * np.pi * ti/12))
         # beta_prob = 1 - np.exp(-beta_rate)
         # 
-        # # Dynamically get the network keys from the simulation
+        # # # Dynamically get the network keys from the simulation
         # network_keys = self.sim.networks.keys()
         # self.pars.beta = {key: [beta_prob, beta_prob] for key in network_keys}
 
         # conditions for all older people above 20 years to never get measles
-        # all_ids_above_20 = sim.people.uid[sim.people.age > 20]
-        # self.susceptible[all_ids_above_20] = False
-        # self.recovered[all_ids_above_20] = True
+        all_ids_above_20 = sim.people.uid[sim.people.age > 20]
+        self.susceptible[all_ids_above_20] = False
+        self.recovered[all_ids_above_20] = True
 
         # Progress exposed -> infectious
         new_infectious = (self.exposed & (self.ti_infectious <= ti) ).uids
@@ -177,14 +188,15 @@ intv = [intv1, intv2]
 # Parameters -------------------------------------------------------------------------------------------
 
 pars = dict(
-    n_agents = 50_000,     # Number of agents to simulate
+    n_agents = 30_000,     # Number of agents to simulate
+    total_pop = 48e6,
     birth_rate = 27.58,    # parameters for monthly: birth rate 2022 is 27.58
     death_rate = 7.8,        # parameters for monthly: death rate 2022 is 7.8
     networks = ss.RandomNet(pars={'n_contacts': 4})
 )
 
 ppl = ss.People(
-    n_agents = 50_000,     # Number of agents to simulate
+    n_agents = 30_000,     # Number of agents to simulate
     age_data = pop_age
    
     )
@@ -197,7 +209,7 @@ mysim = ss.Sim(
     people = ppl, 
     diseases = measles, 
     rand_seed = 765,
-    n_years = 30,
+    n_years = 20,
     dt = 1/12
 )
 
@@ -208,7 +220,7 @@ mysim_Intv = ss.Sim(
     diseases = measles, 
     interventions = intv,
     rand_seed = 765,
-    n_years = 30,
+    n_years = 20,
     dt = 1/12
 )
 

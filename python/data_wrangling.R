@@ -74,6 +74,10 @@ k2 <- k |>
   setcolorder(c("date", "cases", "deaths", "mcv1", "mcv2"))
 fwrite(k2, "data/clean_kenya_measles.csv", row.names = F)
 
+k3 <- k2[, .(year = date, cases)]
+fwrite(k3, "data/k3.csv", row.names = F)
+
+
 # Population dataset ------------------------------------------------------
 
 # Age and population

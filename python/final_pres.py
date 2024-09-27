@@ -16,8 +16,8 @@ class Measles(ss.SIR):
 
         pars = ss.omergeleft(pars,
             # Natural history parameters, all specified in days
-            dur_exp = 10,       # (days) - source: US CDCv3
-            dur_inf = 8,      # 4 days before rash and 4 days after rash
+            dur_exp = 10/365,       # (days) - source: US CDCv3
+            dur_inf = 8/365,      # 4 days before rash and 4 days after rash
             p_death = 0.002,   # Probability of death
 
             # Initial conditions and beta
